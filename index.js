@@ -29,6 +29,7 @@ app.post('/user/create', (req, res)=>{
     }
 });
 
+// app.use();
 app.get('/test/:id', middleware.isLoggedIn, (req, res)=>{
     res.json({
         status: 200,

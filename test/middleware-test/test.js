@@ -5,17 +5,14 @@ const httpMock = require('node-mocks-http');
 
 let should = chai.should();
 
-chai.use(chaiHttp);
 let server = require('../../index');
 const middleware = require('../../middleware');
-
 
 // Assertion Style
 chai.should();
 chai.use(chaiHttp);
 
 describe('Test for Middleware', () => {
-    
     describe('Check if header is passed', () => {
         it('should return 401 is header is not passed', done => {
             chai.request(server).get('/test/Rajat').end((err, resp) => {

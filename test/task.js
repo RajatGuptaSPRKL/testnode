@@ -3,7 +3,6 @@ let chaiHttp = require('chai-http');
 
 let should = chai.should();
 
-chai.use(chaiHttp);
 let server = require('../index');
 
 // Assertion Style

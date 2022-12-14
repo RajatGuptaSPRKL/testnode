@@ -6,7 +6,8 @@
   "scripts": {
     "start": "SET NODE_ENV=dev && nodemon index",
     "test": "mocha test/**/*.js --watch --timeout 10000",
-    "coverage": "nyc --reporter=html mocha"
+    "coverage": "nyc -x \"**/test/**\" --reporter=cobertura --reporter=html mocha test/**/*.js"
+    
   },
   "author": "",
   "license": "ISC",

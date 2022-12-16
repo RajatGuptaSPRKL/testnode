@@ -23,6 +23,7 @@ describe('Book Test', ()=>{
     };
     beforeEach((done)=>{
         Book.deleteMany({}, err=>{
+            console.log("EEEE", err);
             done();
         });
     });
@@ -88,7 +89,5 @@ describe('Book Test', ()=>{
     //         });
     //     });
     // });
-    after(()=>{
-        
-    });
+    
 });

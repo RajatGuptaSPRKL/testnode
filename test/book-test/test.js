@@ -21,12 +21,12 @@ describe('Book Test', ()=>{
         "year": 2022,
         "pages": 345
     };
-    beforeEach((done)=>{
-        Book.deleteMany({}, err=>{
-            console.log("EEEE", err);
-            done();
-        });
-    });
+    // beforeEach((done)=>{
+    //     Book.deleteMany({}, err=>{
+    //         console.log("EEEE", err);
+    //         done();
+    //     });
+    // });
 
     describe('Check the req body validation to create a new book', ()=>{
         it('Should return 400 and message if body is empty', done=>{

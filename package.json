@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "set NODE_ENV=dev&& nodemon index",
-    "test": "set NODE_ENV=dev&& mocha test/**/*.js --exit",
+    "test": "set NODE_ENV=dev&& mocha test/**/**/*.js --exit",
     "coverage": "nyc -x \"**/test/**\" --reporter=cobertura --reporter=html mocha test/**/*.js"
   },
   "author": "",

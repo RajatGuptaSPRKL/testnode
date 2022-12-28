@@ -5,7 +5,7 @@ let Schema = mongoose.Schema;
 let BookSchema = new Schema(
   {
     title: { type: String, required: true },
-    author: { type: String, required: true },
+    author: {type: 'ObjectId', ref: 'Author'},
     year: { type: Number, required: true },
     pages: { type: Number, required: true, min: 1 },
     createdAt: { type: Date, default: Date.now },    

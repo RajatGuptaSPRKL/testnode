@@ -1,12 +1,9 @@
 'use strict';
-const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs');
+const {ApolloServer} = require('@apollo/server');
+const {startStandaloneServer} = require('@apollo/server/standalone');
+const typeDefs = require('./types/book.type');
+const resolvers = require('./resolvers/book.resolver');
 const mongoose = require('mongoose');
-const morgan = require('morgan');
-const app = express();
-const middleware = require('./middleware');
-const book = require('./controllers/routes/book');
 let config = require('config');
 
 async function mongoConnect(){
@@ -22,54 +19,18 @@ async function mongoConnect(){
     }
 }
 
-//don't show the log when it is test
-if(config.util.getEnv('NODE_ENV') !== 'test') {
-    //use morgan to log at command line
-    app.use(morgan('combined')); //'combined' outputs the Apache style LOGs
-}
+const server = new ApolloServer({typeDefs, resolvers});
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-
-let userObj = {};
-
-app.post('/user/create', (req, res) => {
-    const { name, email } = req.body;
-    if (!name || !email) {
-        res.status(404).json({
-            status: 200,
-            message: 'Name and Email are required'
-        });
-    } else {
-        userObj = { name, email };
-        fs.appendFile(`${__dirname}/user.json`, JSON.stringify(userObj), 'utf-8', (err) => {
-            res.status(200).json({
-                status: 200,
-                message: 'Success',
-                data: userObj
-            });
-        });
-    }
-});
-
-app.get('/test/:id', middleware.isLoggedIn, function (req, res) {
-    res.json({
-        status: 200,
-        message: 'Success',
-        data: {
-            id: req.params.id
+async function startServer(){
+    const {url} = await startStandaloneServer(server, {
+        listen: {
+            port: 4000
         }
     });
-});
+    await mongoConnect();
+    console.log("Server started at url: "+url);
+}
 
-app.route('/book').get(book.getBooks).post(book.postBook);
-app.route('/book/:id').get(book.getBook).put(book.updateBook).delete(book.deleteBook);
+startServer();
 
-app.listen(3000, () => {
-    mongoConnect();
-    console.log("App is listening on PORT 3000");
-});
-module.exports = app
+module.exports = server;

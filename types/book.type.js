@@ -1,9 +1,19 @@
 const typeDefs = `#graphql
-    interface ResponseObj {
-        status: Int
-        message: String
+    
+    scalar EmailAddress
+
+    type BookSuccessResponse {
+        books: [Book]!
+        status: Int!
+        message: String!
     }
-    type Book implements ResponseObj{
+
+    type BookErrorResponse {
+        status: Int!
+        message: String!
+    }
+    
+    type Book{
         id: String
         title: String
         authorInfo: Author
@@ -11,20 +21,14 @@ const typeDefs = `#graphql
         pages: Int
         category: BookCategory
         createdAt: String
-        status: Int
-        message: String
     }
 
-    type AllBooks implements ResponseObj {
-        status: Int
-        message: String
-        books: [Book]!
-    }
+    union AllBooks = BookSuccessResponse | BookErrorResponse
  
     type Author{
         id: String
         name: String
-        email: String
+        email: EmailAddress
     }
 
     type BookCategory{
@@ -41,10 +45,10 @@ const typeDefs = `#graphql
 
     input AuthorInput{
         name: String!
-        email: String!
+        email: EmailAddress!
     }
 
-    type NewBookResponse implements ResponseObj {
+    type NewBookResponse {
         id: String
         status: Int!
         message: String!

@@ -19,7 +19,7 @@ async function mongoConnect(){
     }
 }
 
-const server = new ApolloServer({typeDefs, resolvers});
+const server = new ApolloServer({typeDefs, resolvers, includeStacktraceInErrorResponses: false});
 
 async function startServer(){
     const {url} = await startStandaloneServer(server, {

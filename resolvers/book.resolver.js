@@ -1,17 +1,62 @@
 const BookModel = require('../controllers/models/book');
 const AuthorModel = require('../controllers/models/author');
+const { GraphQLScalarType, GraphQLError, Kind } = require('graphql');
 
 const ObjectId = require('mongoose').Types.ObjectId;
+
+/* 
+Customer Email Address Scalar : Starts Here
+*/
+
+const EMAIL_ADDRESS_REGEXP = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+const validate = value => {
+    if (typeof value != "string") {
+        throw new GraphQLError('Entered email is not a string');
+    }
+
+    if (!EMAIL_ADDRESS_REGEXP.test(value)) {
+        throw new GraphQLError('Email is not valid: ' + value, {
+            extensions: {
+                code: "BAD_DATA"
+            }
+        });
+    }
+
+    return value;
+}
+
+const parsedLiteral = ast => {
+    if (ast.kind !== Kind.STRING) {
+        throw new GraphQLError('Query error: Can only parse string as email address but got a :' + ast.kind);
+    }
+
+    return validate(ast.value);
+}
+
+const emailAddress = new GraphQLScalarType({
+    name: 'EmailAddress',
+    description: "A valid email address",
+    parseValue: validate,
+    serialize: validate,
+    parseLiteral: parsedLiteral
+});
+
+/* 
+Ends Here
+*/
 
 const resolvers = {
     Query: {
         fetchAllBooks: async (_, { query }) => {
             try {
-
                 let allBooks = await findBook({ query });
-                return { books: allBooks, status: 200, message: "Book List" };
+                if (allBooks.length) {
+                    return { books: allBooks, status: 200, message: "Book List" };
+                } else {
+                    return { books: [], status: 400, message: "No book found" };
+                }
             } catch (error) {
-                console.log(error);
                 return {
                     status: 400,
                     message: error + ""
@@ -43,6 +88,18 @@ const resolvers = {
             }
         }
     },
+    AllBooks: {
+        __resolveType(obj) {
+            if (obj.books) {
+                return "BookSuccessResponse";
+            }
+            if (!obj.books.length) {
+                return "BookErrorResponse";
+            }
+
+            return null;
+        }
+    },
     Mutation: {
         addNewBook: async (_, args, context) => {
             try {
@@ -61,7 +118,9 @@ const resolvers = {
                 }
             }
         }
-    }
+    },
+    // Customer Scalar Resolver
+    EmailAddress: emailAddress
 };
 
 function findBook({ title, year, id, query }) {
